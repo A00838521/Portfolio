@@ -67,7 +67,7 @@ export function AboutSection() {
           >
             <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="text-zinc-900 dark:text-zinc-100 mb-1">4+</div>
+                <div className="text-zinc-900 dark:text-zinc-100 mb-1">2+</div>
                 <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">{t('about.stats.years')}</div>
               </div>
               <div className="text-center">

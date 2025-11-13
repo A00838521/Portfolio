@@ -81,19 +81,23 @@ export function ProjectsSection() {
         const info = await fetchRepo(f.owner, f.repo);
         repoEntries.push([`${f.owner}/${f.repo}`, info]);
         const branch = info?.default_branch || 'main';
+        // Parse README once to get gallery and a potential hero image (non-badge)
+        const parsed = await fetchReadmeParsed(f.owner, f.repo, branch);
+        if (parsed) {
+          readmeData[`${f.owner}/${f.repo}`] = parsed;
+        }
         let img = await fetchCoverImage(f.owner, f.repo, branch);
+        if (!img && parsed && parsed.images.length > 0) {
+          img = parsed.images[0];
+        }
         if (!img) {
-          img = await fetchReadmeImage(f.owner, f.repo, branch);
+          const readmeImg = await fetchReadmeImage(f.owner, f.repo, branch);
+          if (readmeImg) img = readmeImg;
         }
         if (!img) {
           img = fallbackImage(f.repo, info?.language);
         }
         imageEntries.push([`${f.owner}/${f.repo}`, img]);
-        // README parse
-        const parsed = await fetchReadmeParsed(f.owner, f.repo, branch);
-        if (parsed) {
-          readmeData[`${f.owner}/${f.repo}`] = parsed;
-        }
       }
       if (mounted) {
         setRepoInfo(Object.fromEntries(repoEntries));

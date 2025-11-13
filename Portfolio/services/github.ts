@@ -78,13 +78,17 @@ export async function fetchReadmeImage(owner: string, repo: string, branch = 'ma
   const readmeRaw = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/README.md`;
   const content = await tryFetchRaw(readmeRaw);
   if (!content) return null;
-  const match = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
-  if (!match) return null;
-  let url = match[1].trim();
-  if (url.startsWith('http')) return url;
-  // relative path
-  url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${url.replace(/^\.\//, '')}`;
-  return url;
+  // collect all images
+  const matches = [...content.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1].trim());
+  const isBadgeOrTiny = (u: string) => /shields\.io|badgen|badge|icons?8|logo|\.svg($|\?)/i.test(u);
+  for (let rawUrl of matches) {
+    if (isBadgeOrTiny(rawUrl)) continue;
+    if (!rawUrl.startsWith('http')) {
+      rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${rawUrl.replace(/^\.\//, '')}`;
+    }
+    return rawUrl;
+  }
+  return null;
 }
 
 export async function fetchReadmeParsed(owner: string, repo: string, branch = 'main'): Promise<ReadmeParsed | null> {
@@ -103,6 +107,8 @@ export async function fetchReadmeParsed(owner: string, repo: string, branch = 'm
       if (!url.startsWith('http')) {
         url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${url.replace(/^\.\//, '')}`;
       }
+      // Skip badges/logos/svg to avoid thumbnails
+      if (/shields\.io|badgen|badge|icons?8|logo|\.svg($|\?)/i.test(url)) continue;
       images.push(url);
     }
   }
@@ -169,5 +175,66 @@ export async function fetchContributionsGraphQL(username: string): Promise<{ wee
     return { weeks };
   } catch {
     return { weeks: null, error: 'network' };
+  }
+}
+
+// Public fallback without token using a community API that returns daily contributions
+export async function fetchContributionsPublic(username: string): Promise<{ date: Date; count: number }[][] | null> {
+  const cacheKey = `contribPublic:${username}`;
+  const cached = getCache<{ date: string; count: number }[][]>(cacheKey);
+  if (cached) return cached.map(week => week.map(d => ({ date: new Date(d.date), count: d.count })));
+  try {
+    // Primary endpoint
+    let res = await fetch(`https://github-contributions-api.deno.dev/${username}.json`);
+    if (!res.ok) {
+      // Alternative endpoint
+      res = await fetch(`https://gh-contributions-api.vercel.app/v1/${username}`);
+    }
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    // Normalize into a map of date->count
+    const counts: Record<string, number> = {};
+    if (Array.isArray(data?.contributions)) {
+      for (const c of data.contributions) {
+        if (c?.date && typeof c?.count === 'number') counts[c.date] = c.count;
+      }
+    } else if (Array.isArray(data?.weeks)) {
+      for (const w of data.weeks) {
+        for (const d of w?.contributionDays || []) {
+          if (d?.date && typeof d?.contributionCount === 'number') counts[d.date] = d.contributionCount;
+          else if (d?.date && typeof d?.count === 'number') counts[d.date] = d.count;
+        }
+      }
+    } else if (Array.isArray(data?.months)) {
+      for (const m of data.months) {
+        for (const w of m.weeks || []) {
+          for (const d of w.days || []) {
+            if (d?.date && typeof d?.count === 'number') counts[d.date] = d.count;
+          }
+        }
+      }
+    }
+
+    // Build last ~26 weeks grid
+    const today = new Date();
+    const start = new Date();
+    start.setDate(today.getDate() - 182);
+    const weeks: { date: Date; count: number }[][] = [];
+    let cursor = new Date(start);
+    while (cursor <= today) {
+      const week: { date: Date; count: number }[] = [];
+      for (let d = 0; d < 7; d++) {
+        const iso = cursor.toISOString().split('T')[0];
+        week.push({ date: new Date(cursor), count: counts[iso] || 0 });
+        cursor.setDate(cursor.getDate() + 1);
+        if (cursor > today) break;
+      }
+      weeks.push(week);
+    }
+    setCache(cacheKey, weeks.map(week => week.map(day => ({ date: day.date.toISOString(), count: day.count }))));
+    return weeks;
+  } catch {
+    return null;
   }
 }

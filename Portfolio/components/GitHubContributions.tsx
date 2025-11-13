@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
-import { fetchContributionsGraphQL } from '../services/github';
+import { fetchContributionsGraphQL, fetchContributionsPublic } from '../services/github';
 
 // Genera datos de ejemplo para el calendario de contribuciones
 // Obtiene eventos públicos y calcula commits por día (aprox). Rate limit sin token: 60/h.
@@ -76,12 +76,16 @@ export function GitHubContributions() {
     let mounted = true;
     const username = 'A00838521';
     (async () => {
+      // 1) Try GraphQL (token via localStorage), 2) public API, 3) REST events
       const gql = await fetchContributionsGraphQL(username);
       let weeks = gql.weeks;
       if (!weeks) {
+        const pub = await fetchContributionsPublic(username);
+        weeks = pub || null;
+      }
+      if (!weeks) {
         const rest = await fetchContributionData(username);
         weeks = rest;
-        // Only surface error if fallback ALSO empty and it's not missing-token
         if (gql.error && gql.error !== 'missing-token' && rest.length === 0) {
           setError(gql.error);
         }
