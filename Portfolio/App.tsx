@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { MobileNav } from './components/MobileNav';
 import { MainContent } from './components/MainContent';
 import { LanguageProvider } from './i18n';
+import { Toaster } from 'sonner';
 
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
@@ -65,6 +66,7 @@ export default function App() {
         </div>
         
         <MainContent />
+        <Toaster richColors closeButton position="top-right" />
       </div>
     </LanguageProvider>
   );

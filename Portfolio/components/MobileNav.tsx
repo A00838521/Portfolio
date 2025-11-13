@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Briefcase, Code, GitBranch, Heart, Menu, X, Moon, Sun, Github, Linkedin, Mail, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { toast } from 'sonner';
 import { useI18n } from '../i18n';
 
 interface MobileNavProps {
@@ -171,12 +172,12 @@ export function MobileNav({ theme, toggleTheme, activeSection, setActiveSection 
                 >
                   <Linkedin className="w-5 h-5" />
                 </a>
-                <a
-                  href="mailto:bruno.mega.25@gmail.com"
-                  className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800"
+                <button
+                  onClick={() => { navigator.clipboard.writeText('bruno.mega.25@gmail.com'); toast.success(t('toast.emailCopied')); }}
+                  className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                 >
                   <Mail className="w-5 h-5" />
-                </a>
+                </button>
               </div>
             </div>
           </motion.div>

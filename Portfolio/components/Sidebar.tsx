@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Moon, Sun, User, Briefcase, Code, GitBranch, Heart, Download } from 'lucide-react';
 import { Button } from './ui/button';
 import { useI18n } from '../i18n';
+import { toast } from 'sonner';
 
 interface SidebarProps {
   theme: 'light' | 'dark';
@@ -41,7 +42,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed left-0 top-0 h-screen w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 p-8 flex flex-col overflow-y-auto z-50"
+      className="fixed left-0 top-0 h-screen w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 p-8 flex flex-col overflow-y-hidden no-scrollbar z-50"
     >
       {/* Profile Section */}
       <div className="mb-8">
@@ -128,7 +129,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
         transition={{ delay: 1.1 }}
         className="space-y-4"
       >
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-3 justify-center flex-wrap">
           <motion.a
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -149,14 +150,17 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           >
             <Linkedin className="w-5 h-5" />
           </motion.a>
-          <motion.a
+          <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            href="mailto:bruno.mega.25@gmail.com"
-            className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+            onClick={() => {
+              navigator.clipboard.writeText('bruno.mega.25@gmail.com');
+              toast.success(t('toast.emailCopied'));
+            }}
+            className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
           >
             <Mail className="w-5 h-5" />
-          </motion.a>
+          </motion.button>
         </div>
 
         {/* Theme Toggle */}
@@ -185,6 +189,16 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           className="w-full mt-2"
         >
           {t('actions.lang')}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            navigator.clipboard.writeText('bruno.mega.25@gmail.com');
+            toast.success(t('toast.emailCopied'));
+          }}
+          className="w-full mt-2 flex items-center justify-center gap-2"
+        >
+          <Mail className="h-4 w-4" /> {t('email.button')}
         </Button>
       </motion.div>
     </motion.aside>

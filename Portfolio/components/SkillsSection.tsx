@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Code2, Database, Smartphone, Globe, Boxes, Palette } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 const skillCategories = [
   {
@@ -47,6 +48,7 @@ const skillCategories = [
 ];
 
 export function SkillsSection() {
+  const { t } = useI18n();
   return (
     <section id="habilidades" className="min-h-screen px-12 py-20">
       <div className="max-w-6xl">
@@ -56,10 +58,8 @@ export function SkillsSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">Habilidades Técnicas</h2>
-          <p className="text-zinc-600 dark:text-zinc-400 text-lg">
-            Tecnologías y herramientas que domino
-          </p>
+          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('skills.title')}</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg">{t('skills.subtitle')}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

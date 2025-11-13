@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GitBranch, Star, GitFork, ExternalLink, Sparkles } from 'lucide-react';
 import { GitHubContributions } from './GitHubContributions';
+import { useI18n } from '../i18n';
 
 interface Repository {
   id: number;
@@ -91,6 +92,7 @@ const interestingRepos: InterestingRepo[] = [
 export function GitHubSection() {
   const [repositories, setRepositories] = useState<Repository[]>(defaultRepositories);
   const [loading, setLoading] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     // Función para obtener datos reales de GitHub
@@ -158,10 +160,8 @@ export function GitHubSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">Mi GitHub</h2>
-          <p className="text-zinc-600 dark:text-zinc-400 text-lg">
-            Actividad y repositorios recientes
-          </p>
+          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('github.title')}</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg">{t('github.subtitle')}</p>
         </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-8">
@@ -174,13 +174,13 @@ export function GitHubSection() {
               viewport={{ once: true }}
               className="mb-12"
             >
-              <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">Actividad de Contribuciones</h3>
+              <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('github.contributions')}</h3>
               <GitHubContributions />
             </motion.div>
 
             {/* Recent Repositories */}
             <div>
-              <h3 className="mb-6 text-zinc-900 dark:text-zinc-100">Mis Repositorios Recientes</h3>
+              <h3 className="mb-6 text-zinc-900 dark:text-zinc-100">{t('github.recentRepos')}</h3>
               <div className="space-y-4">
                 {repositories.map((repo, index) => (
                   <motion.a
@@ -240,7 +240,7 @@ export function GitHubSection() {
             <div className="sticky top-24">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-purple-500" />
-                <h3 className="text-zinc-900 dark:text-zinc-100">Repos Interesantes</h3>
+                <h3 className="text-zinc-900 dark:text-zinc-100">{t('github.interesting')}</h3>
               </div>
               
               <div className="space-y-3">

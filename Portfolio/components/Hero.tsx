@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail } from 'lucide-react';
+import { toast } from 'sonner';
+import { useI18n } from '../i18n';
 
 export function Hero() {
+  const { t } = useI18n();
   return (
     <section id="inicio" className="pt-32 pb-20 px-6">
       <div className="container mx-auto max-w-4xl">
@@ -12,14 +15,14 @@ export function Hero() {
             transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
             className="flex-shrink-0"
           >
-              <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1">
-                <img
-                  src="https://github.com/A00838521.png"
-                  alt="Avatar Bruno"
-                  className="w-full h-full rounded-full object-cover"
-                  loading="lazy"
-                />
-              </div>
+            <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1">
+              <img
+                src="https://github.com/A00838521.png"
+                alt="Avatar Bruno"
+                className="w-full h-full rounded-full object-cover"
+                loading="lazy"
+              />
+            </div>
           </motion.div>
 
           <div className="flex-1 text-center md:text-left">
@@ -74,12 +77,12 @@ export function Hero() {
               >
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a
-                href="mailto:bruno.mega.25@gmail.com"
+              <button
+                onClick={() => { navigator.clipboard.writeText('bruno.mega.25@gmail.com'); toast.success(t('toast.emailCopied')); }}
                 className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
               >
                 <Mail className="w-5 h-5" />
-              </a>
+              </button>
             </motion.div>
           </div>
         </div>

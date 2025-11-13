@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Shield, Brain, Award, Target, Code } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { useI18n } from '../i18n';
+import { toast } from 'sonner';
 
 const interests = [
   {
@@ -161,12 +162,12 @@ export function InterestsSection() {
         >
           <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('interests.cta.title')}</h3>
           <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-6">{t('interests.cta.text')}</p>
-          <a
-            href="mailto:bruno.mega.25@gmail.com"
+          <button
+            onClick={() => { navigator.clipboard.writeText('bruno.mega.25@gmail.com'); toast.success(t('toast.emailCopied')); }}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all"
           >
             {t('interests.cta.button')}
-          </a>
+          </button>
         </motion.div>
       </div>
     </section>

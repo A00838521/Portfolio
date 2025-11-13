@@ -43,3 +43,7 @@
 * { box-sizing: border-box; }
 html { font-size: 16px; }
 body { margin: 0; background: var(--background); color: var(--foreground); font-family: system-ui,sans-serif; }
+
+/* Ocultar scrollbar en sidebar sin afectar accesibilidad (aún se puede scroll con wheel) */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

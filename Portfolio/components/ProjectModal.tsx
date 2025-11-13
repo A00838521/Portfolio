@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Github, Check, Briefcase } from 'lucide-react';
+import { X, Github, Check, Briefcase, Image as ImageIcon, Info } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -10,7 +10,10 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
+import { useState } from 'react';
+
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
+  const [showAll, setShowAll] = useState(false);
   if (!project) return null;
 
   return (
@@ -64,7 +67,12 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             {/* Long Description or Role/Experience */}
             {project.longDescription && (
               <div>
-                <h3 className="mb-3 text-zinc-900 dark:text-zinc-100">Descripción</h3>
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="text-zinc-900 dark:text-zinc-100">Descripción</h3>
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
+                    <Info className="w-3 h-3" /> README
+                  </span>
+                </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   {project.longDescription}
                 </p>
@@ -111,30 +119,38 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               </div>
             )}
 
-            {/* Screenshots */}
+            {/* README Images Gallery */}
             {project.screenshots && project.screenshots.length > 0 && (
               <div>
-                <h3 className="mb-3 text-zinc-900 dark:text-zinc-100">
-                  {project.type === 'mobile' ? 'Pantallas de la Aplicación' : 'Capturas de Pantalla'}
-                </h3>
-                <div className={`grid gap-4 ${
-                  project.type === 'mobile' 
-                    ? 'grid-cols-2 lg:grid-cols-3' 
-                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                }`}>
-                  {project.screenshots.map((screenshot, index) => (
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-blue-500" />
+                    <h3 className="text-zinc-900 dark:text-zinc-100">Galería del README</h3>
+                    <span className="text-xs text-zinc-500 dark:text-zinc-400">{project.screenshots.length} imágenes</span>
+                  </div>
+                  {project.screenshots.length > 6 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAll(v => !v)}
+                      className="text-xs"
+                    >
+                      {showAll ? 'Ver menos' : 'Ver más imágenes'}
+                    </Button>
+                  )}
+                </div>
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  {(showAll ? project.screenshots : project.screenshots.slice(0, 6)).map((screenshot, index) => (
                     <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 ${
-                        project.type === 'mobile' ? 'aspect-[9/16]' : 'aspect-video'
-                      }`}
+                      transition={{ delay: index * 0.05 }}
+                      className="rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800 aspect-video"
                     >
                       <ImageWithFallback
                         src={screenshot}
-                        alt={`${project.title} screenshot ${index + 1}`}
+                        alt={`${project.title} imagen ${index + 1}`}
                         className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                       />
                     </motion.div>

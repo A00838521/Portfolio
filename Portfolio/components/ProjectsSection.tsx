@@ -4,7 +4,8 @@ import { Smartphone, Globe, Github, Star, GitFork, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
-import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage } from '../services/github';
+import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage, fetchReadmeParsed } from '../services/github';
+import { useI18n } from '../i18n';
 
 export interface Project {
   id: number;
@@ -68,6 +69,8 @@ export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [repoInfo, setRepoInfo] = useState<Record<string, RepoInfo | null>>({});
   const [images, setImages] = useState<Record<string, string>>({});
+  const [readmeData, setReadmeData] = useState<Record<string, { description: string | null; images: string[] }>>({});
+  const { t } = useI18n();
 
   useEffect(() => {
     let mounted = true;
@@ -86,10 +89,16 @@ export function ProjectsSection() {
           img = fallbackImage(f.repo, info?.language);
         }
         imageEntries.push([`${f.owner}/${f.repo}`, img]);
+        // README parse
+        const parsed = await fetchReadmeParsed(f.owner, f.repo, branch);
+        if (parsed) {
+          readmeData[`${f.owner}/${f.repo}`] = parsed;
+        }
       }
       if (mounted) {
         setRepoInfo(Object.fromEntries(repoEntries));
         setImages(Object.fromEntries(imageEntries));
+        setReadmeData({ ...readmeData });
       }
     }
     load();
@@ -108,10 +117,8 @@ export function ProjectsSection() {
             viewport={{ once: true }}
             className="mb-12"
           >
-            <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">Proyectos Destacados</h2>
-            <p className="text-zinc-600 dark:text-zinc-400 text-lg">
-              Una selección de mis trabajos más recientes y significativos
-            </p>
+            <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('projects.title')}</h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-lg">{t('projects.subtitle')}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -124,6 +131,7 @@ export function ProjectsSection() {
               const forks = info?.forks_count ?? 0;
               const updated = info?.updated_at ? new Date(info.updated_at).toLocaleDateString() : '';
               const img = images[key] || project.image;
+              const parsed = readmeData[key];
               const projectForModal: Project = {
                 id: project.id,
                 title: project.title,
@@ -132,6 +140,8 @@ export function ProjectsSection() {
                 tech: project.tech,
                 image: img,
                 github: githubUrl,
+                longDescription: parsed?.description || undefined,
+                screenshots: parsed?.images || undefined,
               };
               return (
               <motion.div
@@ -190,20 +200,20 @@ export function ProjectsSection() {
                   {/* GitHub Link */}
                   <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                     <motion.a
-                      whileHover={{ scale: 1.1 }}
+                      whileHover={{ scale: 1.15 }}
                       whileTap={{ scale: 0.95 }}
                       href={githubUrl}
                       onClick={(e) => e.stopPropagation()}
-                      className="p-2 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                      className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm shadow hover:shadow-md hover:bg-white dark:hover:bg-zinc-800 transition-all"
                     >
-                      <Github className="w-4 h-4" />
+                      <Github className="w-5 h-5" />
                     </motion.a>
                   </div>
 
                   {/* Click to view indicator */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                     <div className="px-6 py-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-full">
-                      <span className="text-sm">Click para ver detalles</span>
+                      <span className="text-sm">{t('projects.viewDetails')}</span>
                     </div>
                   </div>
                 </div>

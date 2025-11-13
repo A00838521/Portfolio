@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Heart } from 'lucide-react';
+import { toast } from 'sonner';
+import { useI18n } from '../i18n';
 
 export function Footer() {
+  const { t } = useI18n();
   return (
     <footer id="contacto" className="py-12 px-6 bg-zinc-50 dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
       <div className="container mx-auto max-w-6xl">
@@ -36,14 +39,14 @@ export function Footer() {
               <Linkedin className="w-6 h-6" />
             </motion.a>
             
-            <motion.a
+            <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              href="mailto:bruno.mega.25@gmail.com"
+              onClick={() => { navigator.clipboard.writeText('bruno.mega.25@gmail.com'); toast.success(t('toast.emailCopied')); }}
               className="p-4 rounded-full bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow"
             >
               <Mail className="w-6 h-6" />
-            </motion.a>
+            </motion.button>
           </div>
 
           <div className="text-zinc-600 dark:text-zinc-400 flex items-center justify-center gap-2">
@@ -53,7 +56,7 @@ export function Footer() {
           </div>
           
           <p className="mt-4 text-zinc-500 dark:text-zinc-500">
-            © 2025 Bruno Vázquez Espinoza. Todos los derechos reservados.
+            © 2025 Bruno Vázquez Espinoza. {t('footer.rights')}
           </p>
         </motion.div>
       </div>

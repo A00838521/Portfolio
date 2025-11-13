@@ -1,27 +1,50 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useI18n } from '../i18n';
+import { fetchContributionsGraphQL } from '../services/github';
 
 // Genera datos de ejemplo para el calendario de contribuciones
-const generateContributionData = () => {
-  const weeks = 26; // Reducido de 52 a 26 semanas (6 meses)
-  const daysPerWeek = 7;
-  const data = [];
-  
-  for (let week = 0; week < weeks; week++) {
-    const weekData = [];
-    for (let day = 0; day < daysPerWeek; day++) {
-      // Genera un número aleatorio de contribuciones (0-20)
-      const contributions = Math.floor(Math.random() * 21);
-      weekData.push({
-        date: new Date(2024, 0, week * 7 + day + 1),
-        count: contributions,
-      });
+// Obtiene eventos públicos y calcula commits por día (aprox). Rate limit sin token: 60/h.
+async function fetchContributionData(username: string): Promise<{ date: Date; count: number }[][]> {
+  try {
+    const perPage = 100;
+    const pages = 3; // hasta ~300 eventos recientes
+    const allEvents: any[] = [];
+    for (let page = 1; page <= pages; page++) {
+      const res = await fetch(`https://api.github.com/users/${username}/events?per_page=${perPage}&page=${page}`);
+      if (!res.ok) break;
+      const events = await res.json();
+      allEvents.push(...events);
+      if (events.length < perPage) break;
     }
-    data.push(weekData);
+    const counts: Record<string, number> = {};
+    allEvents.forEach(ev => {
+      if (ev.type === 'PushEvent') {
+        const day = ev.created_at.split('T')[0];
+        counts[day] = (counts[day] || 0) + ev.payload.commits.length;
+      }
+    });
+    // Últimos 26 semanas (~182 días)
+    const today = new Date();
+    const start = new Date();
+    start.setDate(today.getDate() - 182);
+    const weeks: { date: Date; count: number }[][] = [];
+    let cursor = new Date(start);
+    while (cursor <= today) {
+      const week: { date: Date; count: number }[] = [];
+      for (let d = 0; d < 7; d++) {
+        const iso = cursor.toISOString().split('T')[0];
+        week.push({ date: new Date(cursor), count: counts[iso] || 0 });
+        cursor.setDate(cursor.getDate() + 1);
+        if (cursor > today) break;
+      }
+      weeks.push(week);
+    }
+    return weeks;
+  } catch {
+    return [];
   }
-  
-  return data;
-};
+}
 
 const getContributionLevel = (count: number) => {
   if (count === 0) return 0;
@@ -43,8 +66,32 @@ const getContributionColor = (level: number) => {
 };
 
 export function GitHubContributions() {
+  const { t } = useI18n();
   const [hoveredDay, setHoveredDay] = useState<{ date: Date; count: number } | null>(null);
-  const contributionData = generateContributionData();
+  const [contributionData, setContributionData] = useState<{ date: Date; count: number }[][]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const username = 'A00838521';
+    (async () => {
+      const gql = await fetchContributionsGraphQL(username);
+      if (mounted && gql.weeks) {
+        setContributionData(gql.weeks);
+        setLoading(false);
+        return;
+      } else if (mounted && gql.error) {
+        setError(gql.error);
+      }
+      const rest = await fetchContributionData(username);
+      if (mounted) {
+        setContributionData(rest);
+        setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
   
   // Para obtener datos reales de GitHub, descomenta esto:
   /*
@@ -93,18 +140,18 @@ export function GitHubContributions() {
 
   return (
     <div className="relative">
-      <div className="overflow-x-auto pb-4">
-        <div className="inline-flex gap-1 p-3 lg:p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700">
+        <div className="overflow-x-auto pb-4">
+          <div className="inline-flex gap-1 p-3 lg:p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700">
           {/* Day labels - Solo en desktop */}
           <div className="hidden lg:flex flex-col justify-between h-full mr-2 text-xs text-zinc-500 dark:text-zinc-400">
-            <span>Lun</span>
-            <span>Mié</span>
-            <span>Vie</span>
+            <span>{t('lang.shortMon') || 'Lun'}</span>
+            <span>{t('lang.shortWed') || 'Mié'}</span>
+            <span>{t('lang.shortFri') || 'Vie'}</span>
           </div>
           
           {/* Contribution grid */}
           <div className="flex gap-1">
-            {contributionData.map((week, weekIndex) => (
+            {(!loading ? contributionData : []).map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
                 {week.map((day, dayIndex) => {
                   const level = getContributionLevel(day.count);
@@ -133,7 +180,7 @@ export function GitHubContributions() {
           animate={{ opacity: 1, y: 0 }}
           className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs lg:text-sm rounded-lg shadow-lg whitespace-nowrap z-10"
         >
-          {hoveredDay.count} contribución{hoveredDay.count !== 1 ? 'es' : ''} - {hoveredDay.date.toLocaleDateString()}
+          {hoveredDay.count} {t('github.contributions').toLowerCase()} - {hoveredDay.date.toLocaleDateString()}
         </motion.div>
       )}
 
@@ -150,6 +197,11 @@ export function GitHubContributions() {
         </div>
         <span>Más</span>
       </div>
+      {error && (
+        <div className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded">
+          {t('github.contributions.error')}
+        </div>
+      )}
     </div>
   );
 }
