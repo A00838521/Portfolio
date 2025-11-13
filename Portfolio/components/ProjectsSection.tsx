@@ -4,7 +4,7 @@ import { Smartphone, Globe, Github, Star, GitFork, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
-import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage, fetchReadmeParsed } from '../services/github';
+import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage, fetchReadmeParsed, validateImage } from '../services/github';
 import { useI18n } from '../i18n';
 
 export interface Project {
@@ -91,10 +91,14 @@ export function ProjectsSection() {
         if (parsed) {
           readmeData[`${f.owner}/${f.repo}`] = parsed;
           if (parsed.images.length > 0) {
-            img = parsed.images[0];
+            // pick first valid image
+            const candidate = parsed.images[0];
+            if (await validateImage(candidate)) {
+              img = candidate;
+            }
           } else {
             const readmeImg = await fetchReadmeImage(f.owner, f.repo, branch);
-            if (readmeImg) img = readmeImg;
+            if (readmeImg && (await validateImage(readmeImg))) img = readmeImg;
           }
         }
         imageEntries.push([`${f.owner}/${f.repo}`, img]);

@@ -50,6 +50,18 @@ function setCache<T>(key: string, value: T, ttlMs = 6 * 60 * 60 * 1000) { // 6h
   } catch { /* ignore */ }
 }
 
+export async function validateImage(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    if (!res.ok) return false;
+    const ct = res.headers.get('content-type') || '';
+    if (!ct.startsWith('image/') || ct.includes('svg')) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function tryFetchRaw(url: string): Promise<string | null> {
   try {
     const res = await fetch(url);
@@ -171,7 +183,7 @@ export async function fetchContributionsGraphQL(username: string): Promise<{ wee
     if (!weeksRaw) return { weeks: null, error: 'no-data' };
     const weeks: { date: Date; count: number }[][] = weeksRaw.map((w: any) => w.contributionDays.map((d: any) => ({ date: new Date(d.date), count: d.contributionCount })));
     // cache simplified structure
-    setCache(cacheKey, weeks.map(week => week.map(day => ({ date: day.date.toISOString(), count: day.count }))));
+    setCache(cacheKey, weeks.map(week => week.map(day => ({ date: day.date.toISOString(), count: day.count }))), 60 * 60 * 1000);
     return { weeks };
   } catch {
     return { weeks: null, error: 'network' };
@@ -232,7 +244,7 @@ export async function fetchContributionsPublic(username: string): Promise<{ date
       }
       weeks.push(week);
     }
-    setCache(cacheKey, weeks.map(week => week.map(day => ({ date: day.date.toISOString(), count: day.count }))));
+    setCache(cacheKey, weeks.map(week => week.map(day => ({ date: day.date.toISOString(), count: day.count }))), 60 * 60 * 1000);
     return weeks;
   } catch {
     return null;
