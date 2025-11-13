@@ -5,6 +5,7 @@ import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
 import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage, fetchReadmeParsed, validateImage } from '../services/github';
+import { featuredRepos } from '../config/featured';
 import { useI18n } from '../i18n';
 
 export interface Project {
@@ -22,44 +23,8 @@ export interface Project {
   experience?: string;
 }
 
-const featured = [
-  {
-    id: 1,
-    owner: 'A00838521',
-    repo: 'Portfolio',
-    title: 'Portfolio',
-    description: 'Portafolio personal construido con React, Vite y Tailwind.',
-    type: 'web' as const,
-    tech: ['React', 'TypeScript', 'Vite', 'Tailwind CSS'],
-  },
-  {
-    id: 2,
-    owner: 'A00838521',
-    repo: 'WindowManager',
-    title: 'WindowManager',
-    description: 'Experimentos con MediaPipe y control tipo window manager.',
-    type: 'web' as const,
-    tech: ['Python', 'MediaPipe'],
-  },
-  {
-    id: 3,
-    owner: 'A00838521',
-    repo: 'ForaneoApp',
-    title: 'Foráneo App',
-    description: 'App móvil con Flutter para estudiantes foráneos.',
-    type: 'mobile' as const,
-    tech: ['Flutter', 'Dart'],
-  },
-  {
-    id: 4,
-    owner: 'A00838521',
-    repo: 'TryingEEG',
-    title: 'Trying EEG',
-    description: 'Exploración de señales EEG y notebooks.',
-    type: 'web' as const,
-    tech: ['Python', 'Jupyter'],
-  },
-];
+// Tomar solo los primeros 4 definidos en config
+const featured = featuredRepos.slice(0, 4).map((r, idx) => ({ id: idx + 1, ...r }));
 
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

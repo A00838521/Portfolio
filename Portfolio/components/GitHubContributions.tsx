@@ -70,10 +70,20 @@ export function GitHubContributions() {
   const [hoveredDay, setHoveredDay] = useState<{ date: Date; count: number } | null>(null);
   const [contributionData, setContributionData] = useState<{ date: Date; count: number }[][]>([]);
   const [loading, setLoading] = useState(true);
+  const [weeksToShow, setWeeksToShow] = useState(26);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
+    const computeWeeks = () => {
+      const w = window.innerWidth;
+      if (w < 640) return 8; // mobile
+      if (w < 1024) return 16; // tablet/medium
+      return 26; // desktop full
+    };
+    setWeeksToShow(computeWeeks());
+    const onResize = () => setWeeksToShow(computeWeeks());
+    window.addEventListener('resize', onResize);
     const username = 'A00838521';
     (async () => {
       // 0) Try prebuilt static file (generated in CI), 1) public API fallback
@@ -99,7 +109,7 @@ export function GitHubContributions() {
         if (!weeks || weeks.length === 0) setError('no-data');
       }
     })();
-    return () => { mounted = false; };
+    return () => { mounted = false; window.removeEventListener('resize', onResize); };
   }, []);
   
   // Para obtener datos reales de GitHub, descomenta esto:
@@ -160,7 +170,7 @@ export function GitHubContributions() {
           
           {/* Contribution grid */}
           <div className="flex gap-1">
-            {(!loading ? contributionData : []).map((week, weekIndex) => (
+            {(!loading ? contributionData.slice(-weeksToShow) : []).map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
                 {week.map((day, dayIndex) => {
                   const level = getContributionLevel(day.count);
