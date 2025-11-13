@@ -80,7 +80,7 @@ export async function fetchReadmeImage(owner: string, repo: string, branch = 'ma
   if (!content) return null;
   // collect all images
   const matches = [...content.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map(m => m[1].trim());
-  const isBadgeOrTiny = (u: string) => /shields\.io|badgen|badge|icons?8|logo|\.svg($|\?)/i.test(u);
+  const isBadgeOrTiny = (u: string) => /shields\.io|badgen|badge|icons?8|logo|icon|thumb|thumbnail|small|mini|\.svg($|\?)/i.test(u);
   for (let rawUrl of matches) {
     if (isBadgeOrTiny(rawUrl)) continue;
     if (!rawUrl.startsWith('http')) {
@@ -108,7 +108,7 @@ export async function fetchReadmeParsed(owner: string, repo: string, branch = 'm
         url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${url.replace(/^\.\//, '')}`;
       }
       // Skip badges/logos/svg to avoid thumbnails
-      if (/shields\.io|badgen|badge|icons?8|logo|\.svg($|\?)/i.test(url)) continue;
+      if (/shields\.io|badgen|badge|icons?8|logo|icon|thumb|thumbnail|small|mini|\.svg($|\?)/i.test(url)) continue;
       images.push(url);
     }
   }
