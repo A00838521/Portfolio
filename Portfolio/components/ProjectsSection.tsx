@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
 import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage, fetchReadmeParsed, validateImage } from '../services/github';
-import { featuredRepos } from '../config/featured';
+import { featuredRepos, MAX_FEATURED } from '../config/featured';
 import { useI18n } from '../i18n';
 
 export interface Project {
@@ -23,8 +23,8 @@ export interface Project {
   experience?: string;
 }
 
-// Tomar solo los primeros 4 definidos en config
-const featured = featuredRepos.slice(0, 4).map((r, idx) => ({ id: idx + 1, ...r }));
+// Tomar sólo los primeros MAX_FEATURED definidos en config
+const featured = featuredRepos.slice(0, MAX_FEATURED).map((r, idx) => ({ id: idx + 1, ...r }));
 
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);

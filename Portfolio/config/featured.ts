@@ -1,5 +1,6 @@
 // Editable listado de repos destacados.
-// Para cambiar los proyectos visibles: ajusta este arreglo (máximo se usarán los primeros 4).
+// Para cambiar los proyectos visibles: ajusta este arreglo.
+// Control global: modifica MAX_FEATURED para mostrar más/menos (por defecto 4).
 // Campos:
 // owner: usuario/organización GitHub
 // repo: nombre del repositorio
@@ -51,3 +52,7 @@ export const featuredRepos: FeaturedRepoConfig[] = [
     tech: ['Python', 'Jupyter']
   }
 ];
+
+// Número máximo de repos a mostrar en la sección de proyectos.
+// Aumenta o reduce este valor según necesites.
+export const MAX_FEATURED = 4;
