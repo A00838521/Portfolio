@@ -77,16 +77,17 @@ export function GitHubContributions() {
     const username = 'A00838521';
     (async () => {
       const gql = await fetchContributionsGraphQL(username);
-      if (mounted && gql.weeks) {
-        setContributionData(gql.weeks);
-        setLoading(false);
-        return;
-      } else if (mounted && gql.error) {
-        setError(gql.error);
+      let weeks = gql.weeks;
+      if (!weeks) {
+        const rest = await fetchContributionData(username);
+        weeks = rest;
+        // Only surface error if fallback ALSO empty and it's not missing-token
+        if (gql.error && gql.error !== 'missing-token' && rest.length === 0) {
+          setError(gql.error);
+        }
       }
-      const rest = await fetchContributionData(username);
       if (mounted) {
-        setContributionData(rest);
+        setContributionData(weeks || []);
         setLoading(false);
       }
     })();

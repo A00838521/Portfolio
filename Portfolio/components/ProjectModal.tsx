@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Github, Check, Briefcase, Image as ImageIcon, Info } from 'lucide-react';
+import { useI18n } from '../i18n';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { ImageWithFallback } from './figma/ImageWithFallback';
@@ -15,6 +16,7 @@ import { useState } from 'react';
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [showAll, setShowAll] = useState(false);
   if (!project) return null;
+  const { t } = useI18n();
 
   return (
     <AnimatePresence>
@@ -68,9 +70,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             {project.longDescription && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h3 className="text-zinc-900 dark:text-zinc-100">Descripción</h3>
+                  <h3 className="text-zinc-900 dark:text-zinc-100">{t('projects.descriptionSource')}</h3>
                   <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
-                    <Info className="w-3 h-3" /> README
+                    <Info className="w-3 h-3" /> {t('projects.readmeNote')}
                   </span>
                 </div>
                 <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -125,7 +127,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <ImageIcon className="w-5 h-5 text-blue-500" />
-                    <h3 className="text-zinc-900 dark:text-zinc-100">Galería del README</h3>
+                    <h3 className="text-zinc-900 dark:text-zinc-100">{t('projects.imagesGallery')}</h3>
                     <span className="text-xs text-zinc-500 dark:text-zinc-400">{project.screenshots.length} imágenes</span>
                   </div>
                   {project.screenshots.length > 6 && (
@@ -135,7 +137,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                       onClick={() => setShowAll(v => !v)}
                       className="text-xs"
                     >
-                      {showAll ? 'Ver menos' : 'Ver más imágenes'}
+                      {showAll ? t('projects.showLess') : t('projects.showMore')}
                     </Button>
                   )}
                 </div>
