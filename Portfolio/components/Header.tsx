@@ -16,6 +16,17 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const scrollToBottom = () => {
+    const contact = document.getElementById('contacto');
+    if (contact) {
+      contact.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+  };
 
   return (
     <motion.header
@@ -35,7 +46,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
 
         <nav className="flex items-center gap-8">
           <button
-            onClick={() => scrollToSection('inicio')}
+            onClick={scrollToTop}
             className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
           >
             Inicio
@@ -53,7 +64,7 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
             GitHub
           </button>
           <button
-            onClick={() => scrollToSection('contacto')}
+            onClick={scrollToBottom}
             className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
           >
             Contacto

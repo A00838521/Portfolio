@@ -30,11 +30,13 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
   };
 
   const handleDownloadCV = () => {
+    const base = (import.meta as any).env?.BASE_URL || '/';
     const link = document.createElement('a');
-    link.href = '/cv/BrunoVazquezEspinoza.pdf';
+    link.href = `${base}cv/BrunoVazquezEspinoza.pdf`;
     link.download = 'CV_Bruno_Vazquez_Espinoza.pdf';
-    // link.click(); // Activa esto cuando agregues el archivo al directorio /public/cv
-    alert('Para habilitar la descarga, coloca tu PDF en /public/cv/BrunoVazquezEspinoza.pdf');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
