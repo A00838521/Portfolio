@@ -4,7 +4,7 @@ import { Smartphone, Globe, Github, Star, GitFork, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
-import { fetchRepo, RepoInfo } from '../services/github';
+import { fetchRepo, RepoInfo, fetchCoverImage, fetchReadmeImage, fallbackImage } from '../services/github';
 
 export interface Project {
   id: number;
@@ -67,18 +67,29 @@ const featured = [
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [repoInfo, setRepoInfo] = useState<Record<string, RepoInfo | null>>({});
+  const [images, setImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let mounted = true;
     async function load() {
-      const entries = await Promise.all(
-        featured.map(async (f) => {
-          const info = await fetchRepo(f.owner, f.repo);
-          return [`${f.owner}/${f.repo}`, info] as const;
-        })
-      );
+      const repoEntries: [string, RepoInfo | null][] = [];
+      const imageEntries: [string, string][] = [];
+      for (const f of featured) {
+        const info = await fetchRepo(f.owner, f.repo);
+        repoEntries.push([`${f.owner}/${f.repo}`, info]);
+        const branch = info?.default_branch || 'main';
+        let img = await fetchCoverImage(f.owner, f.repo, branch);
+        if (!img) {
+          img = await fetchReadmeImage(f.owner, f.repo, branch);
+        }
+        if (!img) {
+          img = fallbackImage(f.repo, info?.language);
+        }
+        imageEntries.push([`${f.owner}/${f.repo}`, img]);
+      }
       if (mounted) {
-        setRepoInfo(Object.fromEntries(entries));
+        setRepoInfo(Object.fromEntries(repoEntries));
+        setImages(Object.fromEntries(imageEntries));
       }
     }
     load();
@@ -112,13 +123,14 @@ export function ProjectsSection() {
               const stars = info?.stargazers_count ?? 0;
               const forks = info?.forks_count ?? 0;
               const updated = info?.updated_at ? new Date(info.updated_at).toLocaleDateString() : '';
+              const img = images[key] || project.image;
               const projectForModal: Project = {
                 id: project.id,
                 title: project.title,
                 description: project.description,
                 type: project.type,
                 tech: project.tech,
-                image: project.image,
+                image: img,
                 github: githubUrl,
               };
               return (
@@ -141,7 +153,7 @@ export function ProjectsSection() {
                       {/* Phone screen */}
                       <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden">
                         <ImageWithFallback
-                          src={project.image}
+                          src={img}
                           alt={project.title}
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
@@ -152,7 +164,7 @@ export function ProjectsSection() {
                   ) : (
                     /* Web project */
                     <ImageWithFallback
-                      src={project.image}
+                      src={img}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />

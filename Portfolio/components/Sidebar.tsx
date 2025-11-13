@@ -52,9 +52,12 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           className="mb-6"
         >
           <div className="w-32 h-32 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-0.5 mx-auto">
-            <div className="w-full h-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-              <span className="text-zinc-400 dark:text-zinc-600">Tu Foto</span>
-            </div>
+            <img
+              src="https://github.com/A00838521.png"
+              alt="Avatar Bruno Vázquez Espinoza"
+              className="w-full h-full rounded-2xl object-cover"
+              loading="lazy"
+            />
           </div>
         </motion.div>
 

@@ -12,11 +12,14 @@ export function Hero() {
             transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
             className="flex-shrink-0"
           >
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1">
-              <div className="w-full h-full rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
-                <span className="text-zinc-400 dark:text-zinc-500">Foto</span>
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1">
+                <img
+                  src="https://github.com/A00838521.png"
+                  alt="Avatar Bruno"
+                  className="w-full h-full rounded-full object-cover"
+                  loading="lazy"
+                />
               </div>
-            </div>
           </motion.div>
 
           <div className="flex-1 text-center md:text-left">

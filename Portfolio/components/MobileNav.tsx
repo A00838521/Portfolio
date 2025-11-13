@@ -52,10 +52,13 @@ export function MobileNav({ theme, toggleTheme, activeSection, setActiveSection 
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-0.5">
-              <div className="w-full h-full rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs">
-                BV
+                <img
+                  src="https://github.com/A00838521.png"
+                  alt="Avatar Bruno"
+                  className="w-full h-full rounded-lg object-cover"
+                  loading="lazy"
+                />
               </div>
-            </div>
             <div>
               <div className="text-sm">Bruno Vázquez Espinoza</div>
               <div className="text-xs text-zinc-600 dark:text-zinc-400">ITC</div>
@@ -105,9 +108,12 @@ export function MobileNav({ theme, toggleTheme, activeSection, setActiveSection 
                 className="mb-8 text-center"
               >
                 <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-0.5 mx-auto mb-4">
-                  <div className="w-full h-full rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                    <span className="text-zinc-400 dark:text-zinc-600">Foto</span>
-                  </div>
+                  <img
+                    src="https://github.com/A00838521.png"
+                    alt="Avatar Bruno"
+                    className="w-full h-full rounded-2xl object-cover"
+                    loading="lazy"
+                  />
                 </div>
                 <h2 className="mb-1">Bruno Vázquez Espinoza</h2>
                 <p className="text-zinc-600 dark:text-zinc-400">Ingeniería en Tecnologías Computacionales</p>
