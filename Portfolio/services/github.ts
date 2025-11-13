@@ -73,17 +73,22 @@ async function tryFetchRaw(url: string): Promise<string | null> {
 }
 
 export async function fetchCoverImage(owner: string, repo: string, branch = 'main'): Promise<string | null> {
+  const cacheKey = `coverImage:${owner}/${repo}`;
+  const cached = getCache<string | null>(cacheKey);
+  if (cached !== null) return cached; // cached (string) or cached null sentinel
   const candidates = ['cover.png', 'cover.jpg', 'cover.jpeg'];
+  let found: string | null = null;
   for (const file of candidates) {
     const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${file}`;
     try {
       const head = await fetch(rawUrl, { method: 'HEAD' });
-      if (head.ok) return rawUrl;
+      if (head.ok) { found = rawUrl; break; }
     } catch {
       /* ignore */
     }
   }
-  return null;
+  setCache(cacheKey, found, 60 * 60 * 1000); // 1h
+  return found;
 }
 
 export async function fetchReadmeImage(owner: string, repo: string, branch = 'main'): Promise<string | null> {
@@ -141,17 +146,18 @@ export async function fetchReadmeParsed(owner: string, repo: string, branch = 'm
 }
 
 export function fallbackImage(repo: string, language?: string | null): string {
-  const picsum = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/1200/800`;
+  const base = (import.meta as any).env?.BASE_URL || '/';
+  const p = (name: string) => `${base}fallbacks/${name}.svg`;
   const map: Record<string, string> = {
-    Portfolio: picsum('portfolio-hero'),
-    WindowManager: picsum('window-manager'),
-    ForaneoApp: picsum('foraneo-app'),
-    TryingEEG: picsum('trying-eeg'),
+    Portfolio: p('portfolio'),
+    WindowManager: p('window-manager'),
+    ForaneoApp: p('foraneo-app'),
+    TryingEEG: p('trying-eeg'),
   };
   if (map[repo]) return map[repo];
-  if (language?.includes('Python')) return picsum('python');
-  if (language?.includes('TypeScript')) return picsum('typescript');
-  return picsum('developer');
+  if (language?.includes('Python')) return p('python');
+  if (language?.includes('TypeScript')) return p('typescript');
+  return p('generic');
 }
 
 // GraphQL contributions (public + optional private if token scope)

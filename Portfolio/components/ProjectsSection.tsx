@@ -31,7 +31,6 @@ const featured = [
     description: 'Portafolio personal construido con React, Vite y Tailwind.',
     type: 'web' as const,
     tech: ['React', 'TypeScript', 'Vite', 'Tailwind CSS'],
-    image: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200&h=800&fit=crop',
   },
   {
     id: 2,
@@ -41,7 +40,6 @@ const featured = [
     description: 'Experimentos con MediaPipe y control tipo window manager.',
     type: 'web' as const,
     tech: ['Python', 'MediaPipe'],
-    image: 'https://images.unsplash.com/photo-1585076800581-5f4c5bb5bd7f?w=1200&h=800&fit=crop',
   },
   {
     id: 3,
@@ -51,7 +49,6 @@ const featured = [
     description: 'App móvil con Flutter para estudiantes foráneos.',
     type: 'mobile' as const,
     tech: ['Flutter', 'Dart'],
-    image: 'https://images.unsplash.com/photo-1539883371015-0c6e6bd5d9ac?w=1200&h=800&fit=crop',
   },
   {
     id: 4,
@@ -61,7 +58,6 @@ const featured = [
     description: 'Exploración de señales EEG y notebooks.',
     type: 'web' as const,
     tech: ['Python', 'Jupyter'],
-    image: 'https://images.unsplash.com/photo-1512551980832-13df02babc9e?w=1200&h=800&fit=crop',
   },
 ];
 
@@ -138,7 +134,7 @@ export function ProjectsSection() {
               const stars = info?.stargazers_count ?? 0;
               const forks = info?.forks_count ?? 0;
               const updated = info?.updated_at ? new Date(info.updated_at).toLocaleDateString() : '';
-              const img = images[key] || project.image;
+              const img = images[key] || fallbackImage(project.repo, info?.language);
               const parsed = readmeData[key];
               const projectForModal: Project = {
                 id: project.id,

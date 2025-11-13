@@ -42,7 +42,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed left-0 top-0 h-screen w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 p-8 flex flex-col overflow-y-hidden no-scrollbar z-50"
+      className="fixed left-0 top-0 h-screen w-80 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 p-8 pb-14 flex flex-col overflow-y-hidden no-scrollbar z-50"
     >
       {/* Profile Section */}
       <div className="mb-8">

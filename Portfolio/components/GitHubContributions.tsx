@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
-import { fetchContributionsGraphQL, fetchContributionsPublic } from '../services/github';
+import { fetchContributionsPublic } from '../services/github';
 
 // Genera datos de ejemplo para el calendario de contribuciones
 // Obtiene eventos públicos y calcula commits por día (aprox). Rate limit sin token: 60/h.
@@ -76,9 +76,10 @@ export function GitHubContributions() {
     let mounted = true;
     const username = 'A00838521';
     (async () => {
-      // 0) Try prebuilt static file (generated in CI), 1) GraphQL (localStorage token), 2) public API, 3) REST events
+      // 0) Try prebuilt static file (generated in CI), 1) public API fallback
       try {
-        const staticRes = await fetch('/contributions.json', { cache: 'no-store' });
+        const base = (import.meta as any).env?.BASE_URL ?? '/';
+        const staticRes = await fetch(`${base}contributions.json`, { cache: 'no-store' });
         if (staticRes.ok) {
           const data = await staticRes.json();
           if (mounted && Array.isArray(data)) {
@@ -89,22 +90,13 @@ export function GitHubContributions() {
         }
       } catch {}
 
-      const gql = await fetchContributionsGraphQL(username);
-      let weeks = gql.weeks;
-      if (!weeks) {
-        const pub = await fetchContributionsPublic(username);
-        weeks = pub || null;
-      }
-      if (!weeks) {
-        const rest = await fetchContributionData(username);
-        weeks = rest;
-        if (gql.error && gql.error !== 'missing-token' && rest.length === 0) {
-          setError(gql.error);
-        }
-      }
+      // Single reliable fallback: public API
+      let weeks = await fetchContributionsPublic(username);
+      if (!weeks || weeks.length === 0) weeks = await fetchContributionData(username);
       if (mounted) {
         setContributionData(weeks || []);
         setLoading(false);
+        if (!weeks || weeks.length === 0) setError('no-data');
       }
     })();
     return () => { mounted = false; };

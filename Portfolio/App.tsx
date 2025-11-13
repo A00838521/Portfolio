@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { MobileNav } from './components/MobileNav';
 import { MainContent } from './components/MainContent';
+import { Header } from './components/Header';
 import { LanguageProvider } from './i18n';
 import { Toaster } from 'sonner';
 
@@ -45,6 +46,10 @@ export default function App() {
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+        {/* Desktop Header */}
+        <div className="hidden lg:block">
+          <Header theme={theme} toggleTheme={toggleTheme} />
+        </div>
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar 

@@ -1,6 +1,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
+import { useI18n } from '../i18n';
 
 interface HeaderProps {
   theme: 'light' | 'dark';
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 export function Header({ theme, toggleTheme }: HeaderProps) {
+  const { t, toggleLang } = useI18n();
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -57,18 +59,26 @@ export function Header({ theme, toggleTheme }: HeaderProps) {
             Contacto
           </button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="ml-4"
-          >
-            {theme === 'light' ? (
-              <Moon className="h-5 w-5" />
-            ) : (
-              <Sun className="h-5 w-5" />
-            )}
-          </Button>
+          <div className="flex items-center gap-2 ml-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleLang}
+            >
+              {t('actions.lang')}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+            >
+              {theme === 'light' ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </nav>
       </div>
     </motion.header>
