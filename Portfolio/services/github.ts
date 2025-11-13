@@ -141,16 +141,17 @@ export async function fetchReadmeParsed(owner: string, repo: string, branch = 'm
 }
 
 export function fallbackImage(repo: string, language?: string | null): string {
+  const picsum = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/1200/800`;
   const map: Record<string, string> = {
-    Portfolio: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200&h=800&fit=crop',
-    WindowManager: 'https://images.unsplash.com/photo-1585076800581-5f4c5bb5bd7f?w=1200&h=800&fit=crop',
-    ForaneoApp: 'https://images.unsplash.com/photo-1539883371015-0c6e6bd5d9ac?w=1200&h=800&fit=crop',
-    TryingEEG: 'https://images.unsplash.com/photo-1512551980832-13df02babc9e?w=1200&h=800&fit=crop',
+    Portfolio: picsum('portfolio-hero'),
+    WindowManager: picsum('window-manager'),
+    ForaneoApp: picsum('foraneo-app'),
+    TryingEEG: picsum('trying-eeg'),
   };
   if (map[repo]) return map[repo];
-  if (language?.includes('Python')) return 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=800&fit=crop';
-  if (language?.includes('TypeScript')) return 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=800&fit=crop';
-  return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=800&fit=crop';
+  if (language?.includes('Python')) return picsum('python');
+  if (language?.includes('TypeScript')) return picsum('typescript');
+  return picsum('developer');
 }
 
 // GraphQL contributions (public + optional private if token scope)

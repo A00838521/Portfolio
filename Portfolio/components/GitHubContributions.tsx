@@ -76,7 +76,19 @@ export function GitHubContributions() {
     let mounted = true;
     const username = 'A00838521';
     (async () => {
-      // 1) Try GraphQL (token via localStorage), 2) public API, 3) REST events
+      // 0) Try prebuilt static file (generated in CI), 1) GraphQL (localStorage token), 2) public API, 3) REST events
+      try {
+        const staticRes = await fetch('/contributions.json', { cache: 'no-store' });
+        if (staticRes.ok) {
+          const data = await staticRes.json();
+          if (mounted && Array.isArray(data)) {
+            setContributionData(data.map((w:any)=>w.map((d:any)=>({ date: new Date(d.date), count: d.count }))));
+            setLoading(false);
+            return;
+          }
+        }
+      } catch {}
+
       const gql = await fetchContributionsGraphQL(username);
       let weeks = gql.weeks;
       if (!weeks) {
