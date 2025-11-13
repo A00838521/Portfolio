@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, GraduationCap } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 export function AboutSection() {
+  const { t } = useI18n();
   return (
     <section id="sobre-mi" className="min-h-screen flex items-center px-6 lg:px-12 py-20">
       <div className="max-w-3xl">
@@ -16,10 +18,7 @@ export function AboutSection() {
             transition={{ delay: 0.3 }}
             className="mb-6 text-zinc-900 dark:text-zinc-100"
           >
-            Hola, soy{' '}
-            <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Desarrollador
-            </span>
+            {t('about.title')}
           </motion.h2>
 
           <motion.p
@@ -28,10 +27,7 @@ export function AboutSection() {
             transition={{ delay: 0.4 }}
             className="mb-6 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed"
           >
-            Estudiante apasionado por la tecnología y el desarrollo de software. Me especializo en
-            crear soluciones innovadoras que combinan diseño elegante con funcionalidad robusta.
-            Mi enfoque está en el desarrollo full-stack, aplicaciones móviles y la experiencia
-            de usuario.
+            {t('about.bio1')}
           </motion.p>
 
           <motion.p
@@ -40,9 +36,7 @@ export function AboutSection() {
             transition={{ delay: 0.5 }}
             className="mb-8 text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed"
           >
-            Siempre estoy buscando nuevos desafíos que me permitan crecer como profesional y
-            aportar valor a través de la tecnología. Me encanta aprender nuevas tecnologías
-            y trabajar en proyectos que tengan un impacto real.
+            {t('about.bio2')}
           </motion.p>
 
           <motion.div
@@ -53,15 +47,15 @@ export function AboutSection() {
           >
             <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400">
               <GraduationCap className="w-5 h-5 text-purple-500" />
-              <span>Ingeniería en Tecnologías Computacionales</span>
+              <span>{t('about.degree')}</span>
             </div>
             <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400">
               <MapPin className="w-5 h-5 text-blue-500" />
-              <span>Tu Ciudad, País</span>
+              <span>{t('about.location')}</span>
             </div>
             <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400">
               <Calendar className="w-5 h-5 text-pink-500" />
-              <span>Disponible para colaborar</span>
+              <span>{t('about.availability')}</span>
             </div>
           </motion.div>
 
@@ -74,15 +68,15 @@ export function AboutSection() {
             <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-zinc-900 dark:text-zinc-100 mb-1">4+</div>
-                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Años Estudiando</div>
+                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">{t('about.stats.years')}</div>
               </div>
               <div className="text-center">
                 <div className="text-zinc-900 dark:text-zinc-100 mb-1">15+</div>
-                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Proyectos</div>
+                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">{t('about.stats.projects')}</div>
               </div>
               <div className="text-center">
                 <div className="text-zinc-900 dark:text-zinc-100 mb-1">10+</div>
-                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">Tecnologías</div>
+                <div className="text-zinc-600 dark:text-zinc-400 text-sm lg:text-base">{t('about.stats.tech')}</div>
               </div>
             </div>
           </motion.div>

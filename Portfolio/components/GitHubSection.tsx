@@ -95,7 +95,7 @@ export function GitHubSection() {
   useEffect(() => {
     // Función para obtener datos reales de GitHub
     const fetchGitHubData = async () => {
-      const username = 'tuusuario'; // Cambia esto por tu usuario de GitHub
+      const username = 'A00838521'; // Usuario de GitHub
       
       // DESCOMENTA ESTAS LÍNEAS CUANDO TENGAS TU API KEY
       // y COMENTA los datos de ejemplo de arriba

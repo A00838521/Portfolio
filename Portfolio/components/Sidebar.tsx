@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Moon, Sun, User, Briefcase, Code, GitBranch, Heart, Download } from 'lucide-react';
 import { Button } from './ui/button';
+import { useI18n } from '../i18n';
 
 interface SidebarProps {
   theme: 'light' | 'dark';
@@ -9,15 +10,16 @@ interface SidebarProps {
   setActiveSection: (section: string) => void;
 }
 
-const navItems = [
-  { id: 'sobre-mi', label: 'Sobre Mí', icon: User },
-  { id: 'proyectos', label: 'Proyectos', icon: Briefcase },
-  { id: 'habilidades', label: 'Habilidades', icon: Code },
-  { id: 'github', label: 'GitHub', icon: GitBranch },
-  { id: 'intereses', label: 'Intereses', icon: Heart },
+const navItemsBase = [
+  { id: 'sobre-mi', labelKey: 'nav.about', icon: User },
+  { id: 'proyectos', labelKey: 'nav.projects', icon: Briefcase },
+  { id: 'habilidades', labelKey: 'nav.skills', icon: Code },
+  { id: 'github', labelKey: 'nav.github', icon: GitBranch },
+  { id: 'intereses', labelKey: 'nav.interests', icon: Heart },
 ];
 
 export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }: SidebarProps) {
+  const { t, toggleLang } = useI18n();
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -27,15 +29,11 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
   };
 
   const handleDownloadCV = () => {
-    // Aquí puedes poner la URL de tu CV
-    // Por ahora crearemos un CV de ejemplo
     const link = document.createElement('a');
-    link.href = '/path-to-your-cv.pdf'; // Cambia esto por la ruta real de tu CV
-    link.download = 'CV_TuNombre.pdf';
-    // link.click(); // Descomenta cuando tengas el CV listo
-    
-    // Mientras tanto, mostramos un alert
-    alert('Aquí se descargará tu CV. Coloca tu archivo PDF en /public y actualiza la ruta en Sidebar.tsx');
+    link.href = '/cv/BrunoVazquezEspinoza.pdf';
+    link.download = 'CV_Bruno_Vazquez_Espinoza.pdf';
+    // link.click(); // Activa esto cuando agregues el archivo al directorio /public/cv
+    alert('Para habilitar la descarga, coloca tu PDF en /public/cv/BrunoVazquezEspinoza.pdf');
   };
 
   return (
@@ -66,9 +64,9 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           transition={{ delay: 0.3 }}
           className="text-center"
         >
-          <h1 className="mb-2 text-zinc-900 dark:text-zinc-100">Tu Nombre</h1>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-1">Ingeniería en Tecnologías</p>
-          <p className="text-zinc-600 dark:text-zinc-400">Computacionales</p>
+          <h1 className="mb-2 text-zinc-900 dark:text-zinc-100">Bruno Vázquez Espinoza</h1>
+          <p className="text-zinc-600 dark:text-zinc-400 mb-1">Ingeniería en Tecnologías Computacionales</p>
+          <p className="text-zinc-600 dark:text-zinc-400">ITESM (2023–2027)</p>
         </motion.div>
       </div>
 
@@ -84,7 +82,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
         >
           <Download className="w-4 h-4 mr-2" />
-          Descargar CV
+          {t('actions.downloadCV')}
         </Button>
       </motion.div>
 
@@ -96,7 +94,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           transition={{ delay: 0.5 }}
           className="space-y-2"
         >
-          {navItems.map((item, index) => {
+          {navItemsBase.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
             return (
@@ -113,7 +111,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </motion.button>
             );
           })}
@@ -131,7 +129,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           <motion.a
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            href="https://github.com/tuusuario"
+            href="https://github.com/A00838521"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
@@ -141,7 +139,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           <motion.a
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            href="https://linkedin.com/in/tuusuario"
+            href="https://linkedin.com/in/bruno-vazquez-espinoza"
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
@@ -151,7 +149,7 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           <motion.a
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            href="mailto:tuemail@ejemplo.com"
+            href="mailto:bruno.mega.25@gmail.com"
             className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
           >
             <Mail className="w-5 h-5" />
@@ -167,14 +165,23 @@ export function Sidebar({ theme, toggleTheme, activeSection, setActiveSection }:
           {theme === 'light' ? (
             <>
               <Moon className="h-4 w-4" />
-              <span>Modo Oscuro</span>
+              <span>{t('actions.darkMode')}</span>
             </>
           ) : (
             <>
               <Sun className="h-4 w-4" />
-              <span>Modo Claro</span>
+              <span>{t('actions.lightMode')}</span>
             </>
           )}
+        </Button>
+
+        {/* Language Toggle */}
+        <Button
+          variant="secondary"
+          onClick={toggleLang}
+          className="w-full mt-2"
+        >
+          {t('actions.lang')}
         </Button>
       </motion.div>
     </motion.aside>

@@ -26,7 +26,7 @@ export function Hero() {
               transition={{ delay: 0.3 }}
               className="mb-4 text-zinc-900 dark:text-zinc-100"
             >
-              Tu Nombre
+              Bruno Vázquez Espinoza
             </motion.h1>
 
             <motion.p
@@ -56,7 +56,7 @@ export function Hero() {
               className="flex gap-4 justify-center md:justify-start"
             >
               <a
-                href="https://github.com/tuusuario"
+                href="https://github.com/A00838521"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
@@ -64,7 +64,7 @@ export function Hero() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com/in/tuusuario"
+                href="https://linkedin.com/in/bruno-vazquez-espinoza"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
@@ -72,7 +72,7 @@ export function Hero() {
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="mailto:tuemail@ejemplo.com"
+                href="mailto:bruno.mega.25@gmail.com"
                 className="p-3 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
               >
                 <Mail className="w-5 h-5" />

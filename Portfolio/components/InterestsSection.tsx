@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { Shield, Brain, Award, Target } from 'lucide-react';
+import { Shield, Brain, Award, Target, Code } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useI18n } from '../i18n';
 
 const interests = [
   {
@@ -31,9 +32,24 @@ const interests = [
       'Aplicaciones de IA en neurociencia',
     ],
   },
+  {
+    id: 3,
+    title: 'Frontend & Apps Móviles',
+    icon: Code,
+    color: 'from-blue-500 to-green-500',
+    description: 'Construcción de interfaces modernas y accesibles con React y Tailwind, priorizando rendimiento y experiencia de usuario. Interés en apps móviles con React Native y ecosistema web.',
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWIgZGV2ZWxvcG1lbnQlMjByZWFjdHxlfDF8fHx8MTc2Mjg5MjQyN3ww&ixlib=rb-4.1.0&q=80&w=1080',
+    highlights: [
+      'React + Tailwind: UI escalables y limpias',
+      'Buenas prácticas de performance y accesibilidad',
+      'UX enfocada en claridad y consistencia',
+      'Interés en React Native para apps móviles',
+    ],
+  },
 ];
 
 export function InterestsSection() {
+  const { t } = useI18n();
   return (
     <section id="intereses" className="min-h-screen px-12 py-20">
       <div className="max-w-6xl">
@@ -43,10 +59,8 @@ export function InterestsSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">Intereses Personales</h2>
-          <p className="text-zinc-600 dark:text-zinc-400 text-lg">
-            Áreas de investigación y desarrollo que me apasionan
-          </p>
+          <h2 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('interests.title')}</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg">{t('interests.subtitle')}</p>
         </motion.div>
 
         <div className="space-y-12">
@@ -145,16 +159,13 @@ export function InterestsSection() {
           viewport={{ once: true }}
           className="mt-16 p-8 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-center"
         >
-          <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">¿Compartes estos intereses?</h3>
-          <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-6">
-            Siempre estoy abierto a colaborar en proyectos relacionados con ciberseguridad, neurociencia
-            e inteligencia artificial. Si tienes ideas o propuestas, ¡hablemos!
-          </p>
+          <h3 className="mb-4 text-zinc-900 dark:text-zinc-100">{t('interests.cta.title')}</h3>
+          <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-6">{t('interests.cta.text')}</p>
           <a
-            href="mailto:tuemail@ejemplo.com"
+            href="mailto:bruno.mega.25@gmail.com"
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all"
           >
-            Conectemos
+            {t('interests.cta.button')}
           </a>
         </motion.div>
       </div>

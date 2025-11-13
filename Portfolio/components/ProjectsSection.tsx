@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Smartphone, Globe, Github } from 'lucide-react';
+import { Smartphone, Globe, Github, Star, GitFork, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ProjectModal } from './ProjectModal';
+import { fetchRepo, RepoInfo } from '../services/github';
 
 export interface Project {
   id: number;
@@ -20,68 +21,71 @@ export interface Project {
   experience?: string;
 }
 
-const projects: Project[] = [
+const featured = [
   {
     id: 1,
-    title: 'TaskFlow - App de Productividad',
-    description: 'Aplicación móvil multiplataforma para gestión de tareas con sincronización en tiempo real.',
-    type: 'mobile',
-    tech: ['React Native', 'Firebase', 'TypeScript'],
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
-    github: '#',
-    longDescription: 'TaskFlow es una aplicación completa de gestión de tareas diseñada para equipos modernos. Incluye sincronización en tiempo real, notificaciones push, y una interfaz intuitiva que facilita la colaboración.',
-    features: [
-      'Sincronización en tiempo real con Firebase',
-      'Modo offline con almacenamiento local',
-      'Notificaciones push personalizadas',
-      'Colaboración en equipo con permisos',
-    ],
-    screenshots: [
-      'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop',
-    ],
+    owner: 'A00838521',
+    repo: 'Portfolio',
+    title: 'Portfolio',
+    description: 'Portafolio personal construido con React, Vite y Tailwind.',
+    type: 'web' as const,
+    tech: ['React', 'TypeScript', 'Vite', 'Tailwind CSS'],
+    image: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200&h=800&fit=crop',
   },
   {
     id: 2,
-    title: 'Analytics Dashboard',
-    description: 'Dashboard para visualización de métricas y análisis de datos empresariales.',
-    type: 'web',
-    tech: ['React', 'D3.js', 'Node.js'],
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-    github: '#',
-    role: 'Desarrollador Frontend',
-    experience: 'Trabajé en este proyecto durante un bootcamp intensivo de desarrollo web. Mi responsabilidad principal fue implementar las visualizaciones interactivas usando D3.js y conectarlas con la API backend. Aprendí mucho sobre manejo de estados complejos y optimización de rendimiento con grandes volúmenes de datos.',
+    owner: 'A00838521',
+    repo: 'WindowManager',
+    title: 'WindowManager',
+    description: 'Experimentos con MediaPipe y control tipo window manager.',
+    type: 'web' as const,
+    tech: ['Python', 'MediaPipe'],
+    image: 'https://images.unsplash.com/photo-1585076800581-5f4c5bb5bd7f?w=1200&h=800&fit=crop',
   },
   {
     id: 3,
-    title: 'FitTrack - Health & Fitness',
-    description: 'App de seguimiento de fitness con planes personalizados y contador de calorías.',
-    type: 'mobile',
-    tech: ['Flutter', 'Dart', 'SQLite'],
-    image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop',
-    github: '#',
-    longDescription: 'Aplicación personal de fitness que desarrollé para practicar Flutter y aprender sobre almacenamiento local. Incluye planes de entrenamiento, seguimiento de progreso y un contador de calorías.',
-    screenshots: [
-      'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop',
-    ],
+    owner: 'A00838521',
+    repo: 'ForaneoApp',
+    title: 'Foráneo App',
+    description: 'App móvil con Flutter para estudiantes foráneos.',
+    type: 'mobile' as const,
+    tech: ['Flutter', 'Dart'],
+    image: 'https://images.unsplash.com/photo-1539883371015-0c6e6bd5d9ac?w=1200&h=800&fit=crop',
   },
   {
     id: 4,
-    title: 'Sistema de Gestión Escolar',
-    description: 'Plataforma web para administración de alumnos, profesores y calificaciones.',
-    type: 'web',
-    tech: ['Vue.js', 'Express', 'MongoDB'],
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop',
-    github: '#',
-    role: 'Desarrollador Full-Stack',
-    experience: 'Proyecto final de curso donde colaboré con un equipo de 3 personas. Me encargué del diseño de la base de datos MongoDB y la implementación del sistema de autenticación con JWT. También desarrollé varios componentes de la interfaz de usuario con Vue.js.',
+    owner: 'A00838521',
+    repo: 'TryingEEG',
+    title: 'Trying EEG',
+    description: 'Exploración de señales EEG y notebooks.',
+    type: 'web' as const,
+    tech: ['Python', 'Jupyter'],
+    image: 'https://images.unsplash.com/photo-1512551980832-13df02babc9e?w=1200&h=800&fit=crop',
   },
 ];
 
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [repoInfo, setRepoInfo] = useState<Record<string, RepoInfo | null>>({});
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      const entries = await Promise.all(
+        featured.map(async (f) => {
+          const info = await fetchRepo(f.owner, f.repo);
+          return [`${f.owner}/${f.repo}`, info] as const;
+        })
+      );
+      if (mounted) {
+        setRepoInfo(Object.fromEntries(entries));
+      }
+    }
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -100,7 +104,24 @@ export function ProjectsSection() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
+            {featured.map((project, index) => {
+              const key = `${project.owner}/${project.repo}`;
+              const info = repoInfo[key];
+              const githubUrl = info?.html_url ?? `https://github.com/${key}`;
+              const language = info?.language ?? project.tech[0] ?? '';
+              const stars = info?.stargazers_count ?? 0;
+              const forks = info?.forks_count ?? 0;
+              const updated = info?.updated_at ? new Date(info.updated_at).toLocaleDateString() : '';
+              const projectForModal: Project = {
+                id: project.id,
+                title: project.title,
+                description: project.description,
+                type: project.type,
+                tech: project.tech,
+                image: project.image,
+                github: githubUrl,
+              };
+              return (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 30 }}
@@ -108,7 +129,7 @@ export function ProjectsSection() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className="group relative bg-zinc-50 dark:bg-zinc-800 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-500 cursor-pointer"
-                onClick={() => setSelectedProject(project)}
+                onClick={() => setSelectedProject(projectForModal)}
               >
                 {/* Project Image with Phone Frame for Mobile */}
                 <div className={`relative overflow-hidden ${project.type === 'mobile' ? 'aspect-[16/9] bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center' : 'aspect-video'}`}>
@@ -159,7 +180,7 @@ export function ProjectsSection() {
                     <motion.a
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      href={project.github}
+                      href={githubUrl}
                       onClick={(e) => e.stopPropagation()}
                       className="p-2 bg-white dark:bg-zinc-900 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
@@ -193,9 +214,17 @@ export function ProjectsSection() {
                       </Badge>
                     ))}
                   </div>
+
+                  {/* GitHub metadata */}
+                  <div className="mt-4 flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+                    <span className="inline-flex items-center gap-1"><Star className="w-4 h-4" /> {stars}</span>
+                    <span className="inline-flex items-center gap-1"><GitFork className="w-4 h-4" /> {forks}</span>
+                    {language && <span className="inline-flex items-center gap-1">{language}</span>}
+                    {updated && <span className="inline-flex items-center gap-1"><Clock className="w-4 h-4" /> {updated}</span>}
+                  </div>
                 </div>
               </motion.div>
-            ))}
+            );})}
           </div>
         </div>
       </section>

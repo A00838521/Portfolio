@@ -50,7 +50,7 @@ export function GitHubContributions() {
   /*
   useEffect(() => {
     const fetchContributions = async () => {
-      const username = 'tuusuario';
+      const username = 'A00838521';
       
       // Necesitarás usar la API de GraphQL de GitHub
       const query = `

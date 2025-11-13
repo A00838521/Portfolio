@@ -17,7 +17,7 @@ export function Footer() {
             <motion.a
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              href="https://github.com/tuusuario"
+              href="https://github.com/A00838521"
               target="_blank"
               rel="noopener noreferrer"
               className="p-4 rounded-full bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow"
@@ -28,7 +28,7 @@ export function Footer() {
             <motion.a
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              href="https://linkedin.com/in/tuusuario"
+              href="https://linkedin.com/in/bruno-vazquez-espinoza"
               target="_blank"
               rel="noopener noreferrer"
               className="p-4 rounded-full bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow"
@@ -39,7 +39,7 @@ export function Footer() {
             <motion.a
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              href="mailto:tuemail@ejemplo.com"
+              href="mailto:bruno.mega.25@gmail.com"
               className="p-4 rounded-full bg-white dark:bg-zinc-800 shadow-sm hover:shadow-md transition-shadow"
             >
               <Mail className="w-6 h-6" />
@@ -53,7 +53,7 @@ export function Footer() {
           </div>
           
           <p className="mt-4 text-zinc-500 dark:text-zinc-500">
-            © 2025 Tu Nombre. Todos los derechos reservados.
+            © 2025 Bruno Vázquez Espinoza. Todos los derechos reservados.
           </p>
         </motion.div>
       </div>
