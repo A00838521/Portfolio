@@ -6,7 +6,7 @@ import { InterestsSection } from './InterestsSection';
 
 export function MainContent() {
   return (
-    <main className="lg:ml-80 min-h-screen pt-16 lg:pt-0">
+    <main className="lg:ml-80 min-h-screen">
       <AboutSection />
       <ProjectsSection />
       <SkillsSection />
